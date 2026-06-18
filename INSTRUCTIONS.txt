@@ -1,0 +1,55 @@
+================================================================================
+INSAT DOWNLOADER - INSTRUCTIONS
+================================================================================
+
+WHAT'S IN THIS FOLDER:
+  insat_download\              The downloader (Python module)
+  interactive_downloader.ps1   Menu-driven launcher - use this
+  INSTRUCTIONS.txt             This file
+
+REQUIREMENTS:
+  - Python 3.10+ with: pip install requests
+  - A MOSDAC account (https://mosdac.gov.in/) with access to the dataset(s)
+    you want.
+
+================================================================================
+HOW TO RUN
+================================================================================
+
+1. Open PowerShell
+2. cd into this folder, e.g.:
+     cd C:\path\to\insat_api
+3. Run:
+     .\interactive_downloader.ps1
+
+   (If PowerShell blocks the script with an execution-policy error, run this
+   once: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser)
+
+4. You will be prompted for:
+   - MOSDAC username / password (only if not already set as
+     $env:MOSDAC_USER / $env:MOSDAC_PASS - never stored in the script)
+   - Satellite: 3DS, 3DR, 3D, or ALL
+   - Product(s) for each satellite, or "A" for all
+   - Download directory (default D:\insat_data)
+   - Date range (YYYY-MM-DD to YYYY-MM-DD)
+   - Confirm (Y/N)
+
+5. All selected products download in parallel, each into its own subfolder:
+     <directory>\<DATASET_ID>\*.h5
+     <directory>\<DATASET_ID>\manifest.jsonl
+
+   Existing files are skipped automatically (safe to re-run / resume).
+
+================================================================================
+NOTES
+================================================================================
+
+- 401 UNAUTHORIZED on some files means your MOSDAC account doesn't have
+  access to that specific product/date - not a bug. Request access on the
+  MOSDAC site if you need it.
+- "MOSDAC 500" warnings are transient server errors; that day is skipped and
+  retried causes no harm to other downloads.
+- To change parallelism, edit DownloadConfig defaults in
+  insat_download\config.py (workers, search_count, etc.)
+
+================================================================================
