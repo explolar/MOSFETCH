@@ -1,4 +1,4 @@
-# insat_download
+# mosfetch
 
 Modular MOSDAC downloader for **INSAT-3DR L1C-SGP imager** scenes
 (`3RIMG_*_L1C_SGP_*.h5`) — the 9-channel product behind `single_sat_radar_v2.nc`.
@@ -10,7 +10,7 @@ Modular MOSDAC downloader for **INSAT-3DR L1C-SGP imager** scenes
 | `config.py` | `DownloadConfig` — all knobs (env + CLI + defaults). No secrets in code. |
 | `client.py` | `MosdacClient` — REST client: `search` / `get_token` / `download` + retry. |
 | `downloader.py` | `Downloader` — date-range walk, product filter, dedupe, resume, parallel, manifest. |
-| `__main__.py` | CLI (`python -m insat_download`). |
+| `__main__.py` | CLI (`python -m mosfetch`). |
 
 Each layer is independent: swap the client, reuse the downloader, test config alone.
 
@@ -32,20 +32,20 @@ pip install requests          # only hard dep (h5py only needed to READ files)
 
 ```bash
 # dry run — list what would download (public search, no credentials)
-python -m insat_download --start 2024-07-01 --end 2024-07-03 --dry-run
+python -m mosfetch --start 2024-07-01 --end 2024-07-03 --dry-run
 
 # download central-India domain, all scenes in range
-python -m insat_download --start 2024-07-01 --end 2024-07-03
+python -m mosfetch --start 2024-07-01 --end 2024-07-03
 
 # thin to 4 scenes/day, full disk, custom output
-python -m insat_download --start 2024-07-01 --end 2024-07-31 \
+python -m mosfetch --start 2024-07-01 --end 2024-07-31 \
     --bbox "" --max-per-day 4 --dest data/insat_raw --workers 6
 ```
 
 Programmatic:
 
 ```python
-from insat_download import DownloadConfig, Downloader
+from mosfetch import DownloadConfig, Downloader
 
 cfg = DownloadConfig(dataset_id="3RIMG_L1C_SGP", dest="data/insat_raw",
                      bbox="74,16,84,26", max_per_day=4)

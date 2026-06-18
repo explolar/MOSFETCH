@@ -4,13 +4,13 @@ CLI for the modular INSAT-3DR downloader.
 Examples
 --------
   # credentials from env (MOSDAC_USER / MOSDAC_PASS)
-  python -m insat_download --start 2024-07-01 --end 2024-07-03
+  python -m mosfetch --start 2024-07-01 --end 2024-07-03
 
   # dry run — just list what WOULD download (no auth needed)
-  python -m insat_download --start 2024-07-01 --end 2024-07-03 --dry-run
+  python -m mosfetch --start 2024-07-01 --end 2024-07-03 --dry-run
 
   # thin to 4 scenes/day, full disk, custom output + dataset id
-  python -m insat_download --start 2024-07-01 --end 2024-07-31 \
+  python -m mosfetch --start 2024-07-01 --end 2024-07-31 \
       --dataset-id 3RIMG_L1C_SGP --bbox "" --max-per-day 4 --dest data/insat_raw
 """
 from __future__ import annotations
@@ -24,7 +24,7 @@ from .downloader import Downloader
 
 
 def build_parser() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(prog="insat_download",
+    ap = argparse.ArgumentParser(prog="mosfetch",
                                  description="Modular MOSDAC INSAT-3DR L1C-SGP downloader.")
     ap.add_argument("--start", required=True, help="start date YYYY-MM-DD (inclusive)")
     ap.add_argument("--end", required=True, help="end date YYYY-MM-DD (inclusive)")

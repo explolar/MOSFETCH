@@ -25,7 +25,7 @@ if (-not $env:MOSDAC_PASS) {
 Write-Host ""
 Write-Host "Checking MOSDAC login..." -ForegroundColor Cyan
 
-$checkScript = "from insat_download.client import MosdacClient`n" +
+$checkScript = "from mosfetch.client import MosdacClient`n" +
                "import os, sys`n" +
                "try:`n" +
                "    MosdacClient(os.environ['MOSDAC_USER'], os.environ['MOSDAC_PASS']).get_token()`n" +
@@ -225,7 +225,7 @@ foreach ($prod in $selectedProducts) {
     $cmd = "Set-Location '$scriptRoot'; " +
            "`$env:MOSDAC_USER = '$($env:MOSDAC_USER)'; " +
            "`$env:MOSDAC_PASS = '$($env:MOSDAC_PASS)'; " +
-           "python -m insat_download --dataset-id $($prod.id) --name-filter $($prod.filter) --start $startDate --end $endDate --dest '$productDir'"
+           "python -m mosfetch --dataset-id $($prod.id) --name-filter $($prod.filter) --start $startDate --end $endDate --dest '$productDir'"
 
     $job = Start-Process powershell -ArgumentList "-NoProfile -Command `"$cmd`"" -NoNewWindow -PassThru
 

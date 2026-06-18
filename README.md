@@ -13,8 +13,8 @@ Download INSAT-3DR L1C-SGP satellite imagery from MOSDAC in parallel with resume
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/explolar/insat_downloader.git
-cd insat_downloader
+git clone https://github.com/explolar/mosfetch.git
+cd mosfetch
 ```
 
 Or download as ZIP and extract.
@@ -105,17 +105,17 @@ Downloading... [████████████████░░] 85%
 
 **List files (dry run, no download):**
 ```bash
-python -m insat_download --start 2024-07-01 --end 2024-07-03 --dry-run
+python -m mosfetch --start 2024-07-01 --end 2024-07-03 --dry-run
 ```
 
 **Download to default folder:**
 ```bash
-python -m insat_download --start 2024-07-01 --end 2024-07-31
+python -m mosfetch --start 2024-07-01 --end 2024-07-31
 ```
 
 **Download with custom options:**
 ```bash
-python -m insat_download \
+python -m mosfetch \
   --start 2024-07-01 \
   --end 2024-07-31 \
   --bbox "74,16,84,26" \
@@ -126,7 +126,7 @@ python -m insat_download \
 
 **Full disk (all locations):**
 ```bash
-python -m insat_download \
+python -m mosfetch \
   --start 2024-07-01 \
   --end 2024-07-31 \
   --bbox ""
@@ -135,7 +135,7 @@ python -m insat_download \
 ### Method 3: Python Code (Programmatic)
 
 ```python
-from insat_download import DownloadConfig, Downloader
+from mosfetch import DownloadConfig, Downloader
 
 # Configure download
 cfg = DownloadConfig(
@@ -210,8 +210,8 @@ python -m insat_download ... --overwrite
 ## Project Structure
 
 ```
-insat_downloader/
-├── insat_download/              # Python module
+mosfetch/
+├── mosfetch/                    # Python module
 │   ├── config.py               # DownloadConfig (all settings)
 │   ├── client.py               # MosdacClient (REST layer)
 │   ├── downloader.py           # Downloader (orchestration)
@@ -232,7 +232,7 @@ Credentials are **never** stored in code. Provide them via:
 ## CLI Reference
 
 ```bash
-python -m insat_download [OPTIONS]
+python -m mosfetch [OPTIONS]
 
 Options:
   --dataset-id TEXT             MOSDAC catalog ID [default: 3RIMG_L1C_SGP]
@@ -253,22 +253,22 @@ Options:
 
 **Download 1 week, central India, 8 parallel workers:**
 ```bash
-python -m insat_download --start 2024-07-01 --end 2024-07-07 --workers 8
+python -m mosfetch --start 2024-07-01 --end 2024-07-07 --workers 8
 ```
 
 **Full disk, thin to 2 scenes/day:**
 ```bash
-python -m insat_download --start 2024-07-01 --end 2024-07-31 --bbox "" --max-per-day 2
+python -m mosfetch --start 2024-07-01 --end 2024-07-31 --bbox "" --max-per-day 2
 ```
 
 **Preview without downloading:**
 ```bash
-python -m insat_download --start 2024-07-01 --end 2024-07-03 --dry-run
+python -m mosfetch --start 2024-07-01 --end 2024-07-03 --dry-run
 ```
 
 ## More Information
 
-- **[API Docs](insat_download/README.md)** — Module reference, config, programmatic examples
+- **[API Docs](mosfetch/README.md)** — Module reference, config, programmatic examples
 - **[INSTRUCTIONS.txt](INSTRUCTIONS.txt)** — Original setup guide
 
 ## License

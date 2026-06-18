@@ -3,7 +3,7 @@ INSAT DOWNLOADER - INSTRUCTIONS
 ================================================================================
 
 WHAT'S IN THIS FOLDER:
-  insat_download\              The downloader (Python module)
+  mosfetch\                    The downloader (Python module)
   interactive_downloader.ps1   Menu-driven launcher - use this
   INSTRUCTIONS.txt             This file
 
@@ -50,6 +50,6 @@ NOTES
 - "MOSDAC 500" warnings are transient server errors; that day is skipped and
   retried causes no harm to other downloads.
 - To change parallelism, edit DownloadConfig defaults in
-  insat_download\config.py (workers, search_count, etc.)
+  mosfetch\config.py (workers, search_count, etc.)
 
 ================================================================================

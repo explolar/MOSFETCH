@@ -9,7 +9,7 @@ Responsibilities (the API client knows none of this):
   • parallel downloads (thread pool),
   • append a JSONL manifest line per file (time, identifier, bytes, path).
 
-Use via the package CLI (`python -m insat_download`) or programmatically:
+Use via the package CLI (`python -m mosfetch`) or programmatically:
     Downloader(cfg).download_range("2024-07-01", "2024-07-31")
 """
 from __future__ import annotations
@@ -23,7 +23,7 @@ from datetime import datetime, timedelta
 from .client import MosdacClient, MosdacUnavailable
 from .config import DownloadConfig
 
-logger = logging.getLogger("insat_download")
+logger = logging.getLogger("mosfetch")
 
 
 def _daterange(start: str, end: str):
