@@ -1,6 +1,8 @@
-# INSAT Downloader
+# 🌧️ MOSFETCH
 
 Download INSAT-3DR L1C-SGP satellite imagery from MOSDAC in parallel with resume/retry.
+
+**MOSFETCH** = MOSDAC + Fetch (with a weather-themed twist!)
 
 ## Requirements
 
