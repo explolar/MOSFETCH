@@ -19,7 +19,7 @@ TOKEN_URL = "https://mosdac.gov.in/download_api/gettoken"
 SEARCH_URL = "https://mosdac.gov.in/apios/datasets.json"
 DOWNLOAD_URL = "https://mosdac.gov.in/download_api/download"
 
-_RETRY_STATUS = {500, 502, 503, 504}
+_RETRY_STATUS = {429, 500, 502, 503, 504}
 _TOKEN_TTL = 3000   # ~50 min; MOSDAC tokens last ~1 h
 
 
@@ -31,7 +31,7 @@ class MosdacClient:
     """Stateful client: caches the access token across calls."""
 
     def __init__(self, username: str | None = None, password: str | None = None,
-                 attempts: int = 3):
+                 attempts: int = 5):
         self.username = username
         self.password = password
         self.attempts = attempts
@@ -46,11 +46,13 @@ class MosdacClient:
                 r = requests.request(method, url, **kw)
             except (requests.ConnectionError, requests.Timeout) as e:
                 last = e
-                time.sleep(1.3 * (i + 1))
+                time.sleep(2.0 * (i + 1))
                 continue
             if r.status_code in _RETRY_STATUS:
                 last = MosdacUnavailable(f"MOSDAC {r.status_code} ({r.reason}) for {url}")
-                time.sleep(1.3 * (i + 1))
+                retry_after = r.headers.get("Retry-After")
+                wait = float(retry_after) if retry_after and retry_after.isdigit() else 2.0 * (i + 1)
+                time.sleep(wait)
                 continue
             r.raise_for_status()
             return r
@@ -112,9 +114,20 @@ class MosdacClient:
         if os.path.exists(out) and not overwrite:
             return out
         token = self.get_token()
-        r = self._request("GET", DOWNLOAD_URL,
-                          headers={"Authorization": f"Bearer {token}"},
-                          params={"id": record_id}, stream=True, timeout=timeout)
+        try:
+            r = self._request("GET", DOWNLOAD_URL,
+                              headers={"Authorization": f"Bearer {token}"},
+                              params={"id": record_id}, stream=True, timeout=timeout)
+        except requests.HTTPError as e:
+            if e.response is not None and e.response.status_code == 401:
+                # cached token expired server-side sooner than our local TTL guess;
+                # force a fresh one and retry once.
+                token = self.get_token(force=True)
+                r = self._request("GET", DOWNLOAD_URL,
+                                  headers={"Authorization": f"Bearer {token}"},
+                                  params={"id": record_id}, stream=True, timeout=timeout)
+            else:
+                raise
         tmp = out + ".part"
         with open(tmp, "wb") as f:
             for chunk in r.iter_content(chunk_size=1 << 20):

@@ -1,3 +1,6 @@
+# Claude Code
+.claude/
+
 # Python
 __pycache__/
 *.py[cod]
@@ -40,4 +43,10 @@ env/
 # Data (can be large)
 data/
 *.h5
+*.part
 manifest.jsonl
+insat_data/
+
+# Credentials — never commit these
+.env
+*.env

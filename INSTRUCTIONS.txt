@@ -34,7 +34,9 @@ HOW TO RUN
    - Date range (YYYY-MM-DD to YYYY-MM-DD)
    - Confirm (Y/N)
 
-5. All selected products download in parallel, each into its own subfolder:
+5. Selected products download one at a time (each into its own subfolder),
+   to stay within MOSDAC's rate limits; files within a product download with
+   a small thread pool:
      <directory>\<DATASET_ID>\*.h5
      <directory>\<DATASET_ID>\manifest.jsonl
 
@@ -44,9 +46,9 @@ HOW TO RUN
 NOTES
 ================================================================================
 
-- 401 UNAUTHORIZED on some files means your MOSDAC account doesn't have
-  access to that specific product/date - not a bug. Request access on the
-  MOSDAC site if you need it.
+- A single 401 mid-run is auto-retried with a fresh token. If 401s persist
+  across many files, your MOSDAC account doesn't have access to that specific
+  product - request access on the MOSDAC site.
 - "MOSDAC 500" warnings are transient server errors; that day is skipped and
   retried causes no harm to other downloads.
 - To change parallelism, edit DownloadConfig defaults in

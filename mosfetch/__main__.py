@@ -34,7 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
                     help='"lon_min,lat_min,lon_max,lat_max"; pass "" for full disk')
     ap.add_argument("--name-filter", default=None, help="product substring guard")
     ap.add_argument("--max-per-day", type=int, default=None, help="cap scenes/day (0=all)")
-    ap.add_argument("--workers", type=int, default=None, help="parallel downloads")
+    ap.add_argument("--workers", type=int, default=None, help="parallel download threads (default 3)")
     ap.add_argument("--overwrite", action="store_true", help="re-download existing files")
     ap.add_argument("--dry-run", action="store_true", help="list scenes, download nothing")
     ap.add_argument("--username", default=None, help="MOSDAC user (else MOSDAC_USER env)")
@@ -67,7 +67,7 @@ def main(argv=None) -> int:
         level=logging.DEBUG if a.verbose else logging.INFO,
         format="%(asctime)s | %(levelname)s | %(message)s")
     cfg = config_from_args(a)
-    logger = logging.getLogger("insat_download")
+    logger = logging.getLogger("mosfetch")
     logger.info(f"dataset={cfg.dataset_id}  bbox={cfg.bbox or 'full-disk'}  dest={cfg.dest}")
     try:
         summary = Downloader(cfg).download_range(a.start, a.end, dry_run=a.dry_run)

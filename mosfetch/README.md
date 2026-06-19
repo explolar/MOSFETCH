@@ -39,7 +39,7 @@ python -m mosfetch --start 2024-07-01 --end 2024-07-03
 
 # thin to 4 scenes/day, full disk, custom output
 python -m mosfetch --start 2024-07-01 --end 2024-07-31 \
-    --bbox "" --max-per-day 4 --dest data/insat_raw --workers 6
+    --bbox "" --max-per-day 4 --dest data/insat_raw
 ```
 
 Programmatic:

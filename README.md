@@ -1,6 +1,7 @@
 # 🌧️ MOSFETCH
 
-Download INSAT-3DR L1C-SGP satellite imagery from MOSDAC in parallel with resume/retry.
+Download INSAT-3DS / INSAT-3DR / INSAT-3D satellite imagery from MOSDAC with
+resume, retry, and rate-limit-aware sequencing.
 
 **MOSFETCH** = MOSDAC + Fetch (with a weather-themed twist!)
 
@@ -123,7 +124,7 @@ python -m mosfetch \
   --bbox "74,16,84,26" \
   --dest "data/insat_raw" \
   --max-per-day 4 \
-  --workers 6
+  --workers 3
 ```
 
 **Full disk (all locations):**
@@ -145,7 +146,7 @@ cfg = DownloadConfig(
     dest="data/insat_raw",
     bbox="74,16,84,26",         # Central India (or "" for full disk)
     max_per_day=4,              # Max 4 scenes per day
-    workers=4                   # Parallel downloads
+    workers=3                   # Parallel download threads
 )
 
 # Download and get summary
@@ -175,13 +176,23 @@ Downloaded files are organized as:
 
 ## Features
 
-- **Resume mode** — Re-run anytime. Existing files skipped unless `--overwrite`
-- **Parallel downloads** — Configurable number of workers (default: 4)
+- **Resume mode** — Re-run anytime. Existing files are checked against the
+  destination folder up front and skipped unless `--overwrite`
+- **Bounded parallel downloads** — Small thread pool per product (default: 3
+  workers); products themselves download one at a time to stay within
+  MOSDAC's rate limits
 - **Manifest logging** — JSONL file tracks every download
-- **Resilient** — Automatic retry on transient errors (5xx, timeouts)
+- **Resilient** — 429/5xx responses retried with backoff (honoring
+  `Retry-After` when sent); a 401 mid-run triggers a fresh token and one retry
+- **Circuit breaker** — if search fails for several consecutive days (a sign
+  of a persistent problem, e.g. a bad `dataset_id`, not transient load), the
+  date range aborts early instead of grinding through every remaining day
 - **Dry run** — List what would download without credentials
 - **Bounding box** — Filter by geography or download full disk
 - **Per-day cap** — Thin dataset (INSAT every ~30 min = 48 scenes/day)
+- **Full INSAT-3DS catalog** in the interactive launcher — all 35+5 Imager
+  and 4 Sounder products per the official MOSDAC product list, not just a
+  handful
 
 ## Troubleshooting
 
@@ -192,7 +203,9 @@ Downloaded files are organized as:
 - Or pass `--username=user --password=pass` on CLI
 
 ### "401 UNAUTHORIZED"
-Your MOSDAC account lacks access to that product on that date. Request access on [mosdac.gov.in](https://mosdac.gov.in).
+A single 401 is auto-retried with a fresh token. If it persists across many
+files, your MOSDAC account lacks access to that product — request access on
+[mosdac.gov.in](https://mosdac.gov.in).
 
 ### "MOSDAC 500" / Timeouts
 Transient server errors. Downloader retries automatically. Safe to re-run.
@@ -206,7 +219,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ### Files already exist
 By default, existing files are skipped. To re-download:
 ```bash
-python -m insat_download ... --overwrite
+python -m mosfetch ... --overwrite
 ```
 
 ## Project Structure
@@ -246,7 +259,7 @@ Options:
   --end DATE                    End date (YYYY-MM-DD)
   --max-per-day INTEGER         Max scenes per calendar day [default: 0 = unlimited]
   --overwrite                   Re-download existing files
-  --workers INTEGER             Parallel downloads [default: 4]
+  --workers INTEGER             Parallel download threads [default: 3]
   --dry-run                     List scenes without downloading
   --manifest PATH               JSONL manifest file [default: <dest>/manifest.jsonl]
 ```

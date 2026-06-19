@@ -44,7 +44,11 @@ class DownloadConfig:
     overwrite : bool
         Re-download even if the file already exists (default False = resume).
     workers : int
-        Parallel download threads.
+        Parallel download threads. Kept modest by default since the 429 retry
+        in client.py absorbs occasional rate-limit hits; raise cautiously.
+    max_consecutive_search_failures : int
+        Abort the date range if this many days in a row fail search — a sign
+        of a persistent problem (e.g. bad dataset_id) rather than transient load.
     search_count : int
         Page size for the MOSDAC search call.
     timeout_search, timeout_token, timeout_download : int
@@ -60,7 +64,8 @@ class DownloadConfig:
     name_filter: str = "L1C_SGP"
     max_per_day: int = 0
     overwrite: bool = False
-    workers: int = 4
+    workers: int = 3
+    max_consecutive_search_failures: int = 5
     search_count: int = 100
     timeout_search: int = 30
     timeout_token: int = 90
